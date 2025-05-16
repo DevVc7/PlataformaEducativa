@@ -25,8 +25,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { mockUsers } from "@/utils/mockData"
-import type { User } from "@/types"
+import { mockUsers } from "@/src/utils/mockData"
+import type { User } from "@/src/types"
 import { Search, Plus, MoreHorizontal, Edit, Trash, UserPlus } from "lucide-react"
 
 const StudentsManagement = () => {

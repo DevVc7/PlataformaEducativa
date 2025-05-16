@@ -7,8 +7,8 @@ import { Button } from "@/components/ui/button"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Label } from "@/components/ui/label"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-import { mockQuestions } from "@/utils/mockData"
-import type { Question, Option } from "@/types"
+import { mockQuestions } from "@/src/utils/mockData"
+import type { Question, Option } from "@/src/types"
 import { AlertCircle, HelpCircle, ArrowRight, ArrowLeft } from "lucide-react"
 
 const QuestionPage = () => {

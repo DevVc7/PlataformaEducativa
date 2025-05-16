@@ -1,7 +1,8 @@
 "use client"
 
-import Navbar from "../src/components/common/Navbar"
+import App from "@/src/App"
+import dynamic from "next/dynamic"
 
-export default function SyntheticV0PageForDeployment() {
-  return <Navbar />
+export default function Home() {
+  return <App />
 }

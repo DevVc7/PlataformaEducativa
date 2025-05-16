@@ -2,12 +2,12 @@
 
 import { useState, useEffect } from "react"
 import { Link } from "react-router-dom"
-import { useAuth } from "@/context/AuthContext"
+import { useAuth } from "@/src/context/AuthContext"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { mockStudentProgress } from "@/utils/mockData"
-import type { StudentProgress } from "@/types"
+import { mockStudentProgress } from "@/src/utils/mockData"
+import type { StudentProgress } from "@/src/types"
 import { BarChart, PieChart, Download, FileText } from "lucide-react"
 
 const ResultsPage = () => {

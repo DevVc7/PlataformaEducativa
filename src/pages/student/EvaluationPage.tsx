@@ -7,8 +7,8 @@ import { Button } from "@/components/ui/button"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Label } from "@/components/ui/label"
 import { Progress } from "@/components/ui/progress"
-import { mockEvaluations } from "@/utils/mockData"
-import type { Evaluation, Answer } from "@/types"
+import { mockEvaluations } from "@/src/utils/mockData"
+import type { Evaluation, Answer } from "@/src/types"
 import { Clock, ArrowRight, ArrowLeft } from "lucide-react"
 
 const EvaluationPage = () => {

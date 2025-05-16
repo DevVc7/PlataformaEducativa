@@ -2,13 +2,13 @@
 
 import { useEffect, useState } from "react"
 import { Link } from "react-router-dom"
-import { useAuth } from "@/context/AuthContext"
+import { useAuth } from "@/src/context/AuthContext"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Progress } from "@/components/ui/progress"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { mockStudentProgress, mockEvaluations } from "@/utils/mockData"
-import type { StudentProgress } from "@/types"
+import { mockStudentProgress, mockEvaluations } from "@/src/utils/mockData"
+import type { StudentProgress } from "@/src/types"
 import { Calculator, BookOpen, Award, ArrowRight } from "lucide-react"
 
 const Dashboard = () => {
