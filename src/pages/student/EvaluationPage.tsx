@@ -6,10 +6,11 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Button } from "@/components/ui/button"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Label } from "@/components/ui/label"
-import { Progress } from "@/components/ui/progress"
 import { mockEvaluations } from "@/src/utils/mockData"
 import type { Evaluation, Answer } from "@/src/types"
-import { Clock, ArrowRight, ArrowLeft } from "lucide-react"
+import { Clock, ArrowRight, ArrowLeft, Star } from "lucide-react"
+import ProgressBar from "@/src/components/common/ProgressBar"
+import Mascot from "@/src/components/common/Mascot"
 
 const EvaluationPage = () => {
   const { id } = useParams<{ id: string }>()
@@ -20,6 +21,8 @@ const EvaluationPage = () => {
   const [answers, setAnswers] = useState<Answer[]>([])
   const [timeLeft, setTimeLeft] = useState(0)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [showCountdown, setShowCountdown] = useState(true)
+  const [countdown, setCountdown] = useState(3)
 
   useEffect(() => {
     if (id) {
@@ -31,17 +34,32 @@ const EvaluationPage = () => {
     }
   }, [id])
 
+  // Efecto para el countdown inicial
   useEffect(() => {
-    if (timeLeft > 0) {
+    if (showCountdown) {
+      if (countdown > 0) {
+        const timer = setTimeout(() => {
+          setCountdown(countdown - 1)
+        }, 1000)
+        return () => clearTimeout(timer)
+      } else {
+        setShowCountdown(false)
+      }
+    }
+  }, [countdown, showCountdown])
+
+  // Efecto para el temporizador principal
+  useEffect(() => {
+    if (!showCountdown && timeLeft > 0) {
       const timer = setTimeout(() => {
         setTimeLeft((prev) => prev - 1)
       }, 1000)
 
       return () => clearTimeout(timer)
-    } else if (timeLeft === 0 && evaluation) {
+    } else if (timeLeft === 0 && evaluation && !showCountdown) {
       handleSubmitEvaluation()
     }
-  }, [timeLeft])
+  }, [timeLeft, showCountdown])
 
   const handleOptionSelect = (questionId: string, optionId: string) => {
     setAnswers((prev) => {
@@ -119,6 +137,20 @@ const EvaluationPage = () => {
     return (answers.length / evaluation.questions.length) * 100
   }
 
+  if (showCountdown) {
+    return (
+      <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
+        <div className="bg-white rounded-2xl p-8 shadow-kid border-4 border-primary/20 text-center">
+          <h2 className="text-2xl font-bold text-primary mb-4">¡Prepárate para el desafío!</h2>
+          <div className="w-24 h-24 rounded-full bg-primary text-white text-5xl font-bold flex items-center justify-center mx-auto mb-4 animate-bounce-slow">
+            {countdown}
+          </div>
+          <p className="text-lg">El desafío comenzará en segundos...</p>
+        </div>
+      </div>
+    )
+  }
+
   if (!evaluation) {
     return (
       <div className="flex items-center justify-center h-[calc(100vh-200px)]">
@@ -129,34 +161,54 @@ const EvaluationPage = () => {
 
   const currentQuestion = evaluation.questions[currentIndex]
   const questionTypeClass = evaluation.type === "matematica" ? "matematica-bg" : "comunicacion-bg"
+  const questionTypeColor = evaluation.type === "matematica" ? "bg-[#4CAF50]" : "bg-[#FF9800]"
 
   return (
-    <div className="max-w-3xl mx-auto">
-      <div className="mb-4 flex justify-between items-center">
-        <h1 className="text-xl font-bold">{evaluation.title}</h1>
-        <div className={`flex items-center space-x-2 px-3 py-1 rounded-md ${questionTypeClass}`}>
-          <Clock className="h-4 w-4" />
-          <span>{formatTime(timeLeft)}</span>
+    <div className="max-w-3xl mx-auto relative">
+      <Mascot position="bottom-right" type="star" />
+
+      <div className="mb-6 bg-gradient-to-r from-primary/20 to-secondary/20 p-4 rounded-2xl shadow-kid">
+        <div className="flex justify-between items-center">
+          <h1 className="text-xl font-bold">{evaluation.title}</h1>
+          <div className={`flex items-center space-x-2 px-4 py-2 rounded-xl ${questionTypeClass}`}>
+            <Clock className="h-5 w-5" />
+            <span className="font-bold">{formatTime(timeLeft)}</span>
+          </div>
+        </div>
+
+        <div className="mt-4">
+          <div className="flex justify-between text-sm mb-1">
+            <span className="font-bold">Progreso del Desafío</span>
+            <span className="font-bold">
+              {answers.length} de {evaluation.questions.length} preguntas
+            </span>
+          </div>
+          <ProgressBar
+            value={answers.length}
+            max={evaluation.questions.length}
+            type={evaluation.type === "matematica" ? "matematica" : "comunicacion"}
+            size="md"
+            showLabel={false}
+          />
         </div>
       </div>
 
-      <div className="mb-4">
-        <div className="flex justify-between text-sm mb-1">
-          <span>Progreso</span>
-          <span>
-            {answers.length} de {evaluation.questions.length} preguntas
-          </span>
-        </div>
-        <Progress value={calculateProgress()} className="h-2" />
-      </div>
-
-      <Card className="mb-6">
-        <CardHeader>
-          <CardTitle>Pregunta {currentIndex + 1}</CardTitle>
-          <CardDescription>{currentQuestion.title}</CardDescription>
+      <Card className="kid-card border-4 border-primary/20 mb-6">
+        <CardHeader className={`bg-${evaluation.type === "matematica" ? "[#4CAF50]" : "[#FF9800]"}/10`}>
+          <div className="flex items-center">
+            <div
+              className={`w-10 h-10 rounded-full flex items-center justify-center mr-3 ${questionTypeColor} text-white`}
+            >
+              <Star className="h-5 w-5" />
+            </div>
+            <div>
+              <CardTitle>Pregunta {currentIndex + 1}</CardTitle>
+              <CardDescription>{currentQuestion.title}</CardDescription>
+            </div>
+          </div>
         </CardHeader>
-        <CardContent>
-          <div className="mb-4">
+        <CardContent className="p-6">
+          <div className="mb-4 p-4 bg-white rounded-xl border-2 border-primary/10 shadow-sm">
             <p className="text-lg">{currentQuestion.content}</p>
           </div>
 
@@ -164,7 +216,7 @@ const EvaluationPage = () => {
             {currentQuestion.options.map((option) => (
               <div
                 key={option.id}
-                className="flex items-center space-x-2 border p-3 rounded-md hover:bg-gray-50"
+                className="flex items-center space-x-2 border-2 border-primary/10 p-4 rounded-xl hover:bg-primary/5 transition-all hover:shadow-kid hover:-translate-y-1 cursor-pointer"
                 onClick={() => handleOptionSelect(currentQuestion.id, option.id)}
               >
                 <RadioGroupItem value={option.id} id={`${currentQuestion.id}-${option.id}`} className="mr-2" />
@@ -175,9 +227,14 @@ const EvaluationPage = () => {
             ))}
           </RadioGroup>
         </CardContent>
-        <CardFooter className="flex justify-between">
+        <CardFooter className="p-4 bg-white flex justify-between">
           <div className="flex space-x-2">
-            <Button variant="outline" onClick={handlePrevQuestion} disabled={currentIndex === 0}>
+            <Button
+              variant="outline"
+              onClick={handlePrevQuestion}
+              disabled={currentIndex === 0}
+              className="rounded-xl border-2 border-primary/20 hover:bg-primary/10"
+            >
               <ArrowLeft className="mr-2 h-4 w-4" />
               Anterior
             </Button>
@@ -189,7 +246,7 @@ const EvaluationPage = () => {
               </Button>
             ) : (
               <Button onClick={handleSubmitEvaluation} className="btn-primary" disabled={isSubmitting}>
-                {isSubmitting ? "Enviando..." : "Finalizar Evaluación"}
+                {isSubmitting ? "Enviando..." : "Finalizar Desafío"}
               </Button>
             )}
           </div>
@@ -202,12 +259,12 @@ const EvaluationPage = () => {
             key={index}
             variant="outline"
             size="sm"
-            className={`w-10 h-10 ${
+            className={`w-12 h-12 rounded-xl border-2 ${
               index === currentIndex
-                ? "bg-primary text-primary-foreground"
+                ? `${evaluation.type === "matematica" ? "bg-[#4CAF50]" : "bg-[#FF9800]"} text-white border-transparent`
                 : getSelectedOption(evaluation.questions[index].id)
-                  ? "bg-muted"
-                  : ""
+                  ? "bg-primary/10 border-primary/20 text-primary"
+                  : "bg-white border-gray-200"
             }`}
             onClick={() => setCurrentIndex(index)}
           >
